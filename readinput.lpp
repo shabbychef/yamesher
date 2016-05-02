@@ -1,0 +1,171 @@
+%option noyywrap
+%option warn
+%option noverbose 
+%option default
+%option noc++
+%{
+//START HEADER
+//START COPYRIGHT
+/*
+ *  Corner Lopping Mesher Software
+ *  Copyright (C) 2004 Steven E. Pav
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *  Send comments and/or bug reports to:
+ *                 spav@ucsd.edu 
+ */
+//END COPYRIGHT
+//START CVSLOG
+/* CVS info:
+ * $Id: readinput.lpp,v 1.3 2004/11/05 01:48:59 spav Exp $
+ * $Log: readinput.lpp,v $
+ * Revision 1.3  2004/11/05 01:48:59  spav
+ * ughhhhh!
+ *
+ * Revision 1.2  2004/11/05 00:47:48  spav
+ * a total mess
+ *
+ * Revision 1.1  2004/11/04 23:31:25  spav
+ * got a running readinput--still cannot hook it up, though.
+ *
+ *
+ */
+//END CVSLOG
+//END HEADER
+
+#include "readinput.tab.hpp"
+#include <iostream>
+#include <FlexLexer.h>
+
+#define YY_DECL int yylex( YYSTYPE *yylval )
+
+int number_simps_read;
+int number_simps_to_read;
+
+int number_points_read;
+int number_points_to_read;
+
+int number_names_read;
+int number_names_to_read;
+
+short int number_coords_read;
+short int number_types_read;
+
+%}
+
+%s P_HEADER
+%s P_READ_NAME
+%s P_READ_COORDS
+%s S_HEADER
+%s S_READ_NAME
+%s S_READ_INTS
+%s S_READ_SUBSIMPS
+%s TERMINAL
+
+
+SPACETAB   [ \t]
+WS         [ \t\n]+
+COMSTART   [#]
+
+DIGIT      [0-9]
+NONZERO    [1-9]
+NONEGATIVEINT  {DIGIT}|{NONZERO}{DIGIT}+
+INTEGER    -?{SPACETAB}?{NONEGATIVEINT}
+
+ALPHA      [a-zA-Z]
+ALPHANUM   {DIGIT}|{ALPHA}
+NAMECHAR   {ALPHANUM}|[_-]
+NAMEABLE   {NAMECHAR}+
+ALPHANAME  {ALPHA}{NAMECHAR}*
+
+DIMENSION  dimension|Dimension|DIMENSION
+FLOAT      ([-+]{SPACETAB}?)?(({NONEGATIVEINT}|{DIGIT}*\.{DIGIT}+)([eE]{INTEGER})?)
+
+%%
+
+<*>{WS}             							; /*ignore spaces*/
+<*>{COMSTART}.*$									; /*ignore comments*/
+
+<INITIAL>{DIMENSION}{WS}2        { BEGIN(P_HEADER); 
+																	return DIMENSION; } 
+
+	/* point statement */
+<P_HEADER>{ALPHANAME}    			   { yylval->name = yytext; return SIMTYPENAME; }
+<P_HEADER>{NONEGATIVEINT}        { number_points_read = 0;
+                                   number_points_to_read = atoi(yytext);
+                                   yylval->ival = number_points_to_read;
+                                   BEGIN(P_READ_NAME);
+																	 return INTEGER;
+                                 }
+
+	/* a point: name, then two coords */
+<P_READ_NAME>{NAMEABLE}          { yylval->name = yytext;
+																	 number_coords_read = 0;
+																	 BEGIN(P_READ_COORDS);
+																	 return POINTNAME;
+                                 }
+<P_READ_COORDS>{FLOAT}           { yylval->fval = atof(yytext);
+																	 if (++number_coords_read == 2)
+																	 { 
+																		 if (++number_points_read ==
+																				 number_points_to_read)
+																		 { BEGIN(S_HEADER); } else
+																		 { BEGIN(P_READ_NAME); }
+																	 }
+																	 return FLOAT;
+                                 }
+
+	/* simplex statement, then number of them */
+<S_HEADER>{ALPHANAME}    			       { yylval->name = yytext; return SIMTYPENAME; }
+<S_HEADER>{NONEGATIVEINT}        { number_simps_read = 0;
+                                   number_simps_to_read = atoi(yytext);
+                                   yylval->ival = number_simps_to_read;
+                                   BEGIN(S_READ_NAME);
+																	 return INTEGER;
+                                 }
+
+	/* a simplex statement, then #ints,exts, names of them */
+<S_READ_NAME>{NAMEABLE}          { yylval->name = yytext;
+																	 number_types_read = 0;
+																	 number_names_to_read = 0;
+																	 BEGIN(S_READ_INTS);
+																	 return SIMPLEXNAME;
+                                 }
+
+<S_READ_INTS>{INTEGER}           {  yylval->ival = atoi(yytext); 
+																	 if (++number_types_read == 2)
+																	 	{ BEGIN(S_READ_SUBSIMPS); 
+																	    number_names_read = 0; }
+																	 number_names_to_read += abs(yylval->ival);
+																	 return INTEGER;
+                                 }
+
+<S_READ_SUBSIMPS>{NAMEABLE}      { yylval->name = yytext;
+																	 if (++number_names_read ==
+																			 number_names_to_read)
+																	 { 
+																		 if (++number_simps_read ==
+																				 number_simps_to_read)
+																		 { BEGIN(S_HEADER); } else
+																		 { BEGIN(S_READ_NAME); }
+																	 }
+																	 return NAME;
+                                 }
+
+%%
+
+
+

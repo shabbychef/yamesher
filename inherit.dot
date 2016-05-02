@@ -1,0 +1,41 @@
+
+digraph inherit {
+
+	curve -> fp;
+	curve -> ip;
+
+	fp [label="finite path"];
+	ip [label="infinite path"];
+
+	fp -> bezier;
+	ip -> ray;
+	ip -> line;
+	fp -> circle;
+	fp -> ellipse;
+	ip -> parabola;
+	ip -> hyperbola;
+
+	obj -> centered [label = "Virt"];
+	obj -> curve [label = "Virt"];
+
+	centered -> simple -> conic;
+
+	simple -> straight;
+
+	conic -> point;
+	conic -> circle;
+	conic -> ellipse;
+	conic -> parabola;
+	conic -> hyperbola;
+
+	straight -> line;
+	straight -> ray;
+	straight -> dseg;
+	
+	centered -> bezier;
+	bezier -> qbez;
+	bezier -> dseg;
+	bezier -> point;
+
+}
+

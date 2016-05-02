@@ -1,0 +1,112 @@
+%{
+//START HEADER
+//START COPYRIGHT
+/*
+ *  Corner Lopping Mesher Software
+ *  Copyright (C) 2004 Steven E. Pav
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *  Send comments and/or bug reports to:
+ *                 spav@ucsd.edu 
+ */
+//END COPYRIGHT
+//START CVSLOG
+/* CVS info:
+ * $Id: readinput.ypp,v 1.3 2004/11/05 01:48:59 spav Exp $
+ * $Log: readinput.ypp,v $
+ * Revision 1.3  2004/11/05 01:48:59  spav
+ * ughhhhh!
+ *
+ * Revision 1.2  2004/11/05 00:47:49  spav
+ * a total mess
+ *
+ * Revision 1.1  2004/11/04 23:31:25  spav
+ * got a running readinput--still cannot hook it up, though.
+ *
+ *
+ */
+//END CVSLOG
+//END HEADER
+#include <iostream>
+#include <stdlib.h>
+#include <FlexLexer.h>
+%}
+
+%pure_parser
+
+%union {
+	double fval;
+	int ival;
+	char *name;
+}
+%token DIMENSION
+%token <name>NAME
+%token <name>POINTNAME
+%token <name>SIMTYPENAME
+%token <name>SIMPLEXNAME
+%token <ival>INTEGER
+%token <fval>FLOAT
+
+%{
+#define YYPARSE_PARAM yyflexlexer
+#define YYLEX_PARAM yyflexlexer 
+
+int yylex( YYSTYPE *yylval, void* yfl ) { 
+	yyFlexLexer *yflptr = reinterpret_cast<yyFlexLexer*>(yfl);
+	yflptr->yylex();
+};
+extern void yyerror(char *msg);
+%}
+
+%%
+
+datfile : dimension_statement points segments planes;
+
+namelist : NAME 
+    | namelist NAME;
+
+dimension_statement : DIMENSION;
+
+points : SIMTYPENAME INTEGER point_list 
+	{ std::cerr << "num points: " << $2 << "\n"; };
+point_list : point
+		| point_list point;
+point  : POINTNAME FLOAT FLOAT;
+
+segments : SIMTYPENAME INTEGER segment_list
+	{ std::cerr << "num segments: " << $2 << "\n"; };
+segment_list : segment
+		| segment_list segment;
+segment  : SIMPLEXNAME INTEGER INTEGER namelist ;
+
+planes : SIMTYPENAME INTEGER plane
+	{ std::cerr << "num planes: " << $2 << "\n"; };
+
+plane  : SIMPLEXNAME INTEGER INTEGER namelist ;
+
+%%
+
+//int main(int argc, char *argv[])
+//{
+//	yyFlexLexer *yyfl = new yyFlexLexer();
+//  yyparse(yyfl);
+//	return 0;
+//}
+
+/* This is an error function used by yacc, and must be defined */
+void yyerror(char *message)
+{ std::cerr << "well shit: " << message << "\n"; }
+

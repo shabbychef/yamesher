@@ -1,0 +1,282 @@
+
+######################
+######################
+# makefile generated 
+# lopping makefile 
+# created by s.e.pav 
+# $Id: Makefile,v 1.33 2005/03/16 00:45:01 spav Exp $
+# see also http://www.opussoftware.com/tutorial/TutMakefile.htm
+# $Log: Makefile,v $
+#
+# use space makefile
+#
+######################
+######################
+
+# project name
+PROJECT      = lopping
+
+TIME        := $(shell perl -e 'print time();')
+
+STUB         = $(HOME)/sys/STUB
+DIR_STUB     = work
+CODE_DIR     = $(DIR_STUB)/$(PROJECT)/LOPPER
+
+TCLAPDIR     = ./tclap/include
+
+# put all source files here
+SRCS         = work_queue Lop_triangulation_2 lookups segment_base 
+C_SRCS       = $(patsubst %,%.c,$(SRCS))
+CPP_SRCS     = $(patsubst %,%.cpp,$(SRCS))
+H_SRCS       = $(patsubst %,%.h,$(SRCS))
+C_OBJS       = $(patsubst %,%.o,$(SRCS))
+
+ALL_SRCS     = $(SRCS) work_queue_test Lop_triangulation_2_test lookups_test utility
+
+# CGAL makefile?
+CGAL_MAKEFILE = /usr/local/CGAL-3.1/make/makefile_i686_Linux-2.6.11-gentoo-r9_g++-3.3.5
+
+include $(CGAL_MAKEFILE)
+
+# testing
+TESTRUNNER   = Lop_triangulation_2_test
+TEST_SRCS    = $(TESTRUNNER) 
+TEST_SRCS    = $(TESTRUNNER) $(SRCS)
+TEST_OBJS    = $(patsubst %,%.o,$(TEST_SRCS))
+TEST_CPPS    = $(patsubst %,%.cpp,$(TEST_SRCS))
+TEST_HS      = $(patsubst %,%.h,$(TEST_SRCS))
+
+# generated figures
+RAN_FIGS		 = as_input.ps curvature_bounded.ps finished_groom.ps \
+							 input_conforming.ps quality_insured.ps
+GEND_FIGS		 = $(RAN_FIGS) catchend.ps
+FIG_CACHE    = figtars/
+
+# This is the name of your output file
+OUT          = $(PROJECT)
+
+# CC speficies the name of the C compiler; CCC is the C++ compiler.
+CC           = gcc
+CCC          = g++
+
+# This specifies all your include directories
+INCLUDES     = -I. -I$(TCLAPDIR)
+
+# optimization:
+OPT_FLAGS    = -O2
+OPT_FLAGS    = 
+# Put any flags you want to pass to the C,C++ compiler here.
+CFLAGS       = -g -Wall $(GP_FLAGS) $(OPT_FLAGS)
+CCFLAGS      = $(CGAL_CXXFLAGS) $(LONG_NAME_PROBLEM_CXXFLAGS) $(CFLAGS) -time
+
+# Put any libraries here.
+PLOTLIBS     = -lplotter -lXaw -lXmu -lXt -lXext -lX11 -lm
+NEWPLOTLIBS  = $(PLOTLIBS) -lSM -lICE
+PRELIBS      = -L/usr/local/lib -L. -L/usr/X11R6/lib 
+POSTLIBS     = -lc -lm -lz -lstdc++
+LIBS         = $(PRELIBS) $(CGAL_LD_LIBPATH) $(POSTLIBS) 
+FAIL_IS_OK   = -Wl,-noinhibit-exec
+FAIL_IS_OK   = 
+LDFLAGS      = -v $(CGAL_LDFLAGS) $(FAIL_IS_OK) -freorder-functions $(GP_FLAGS)
+
+# lop triangulator binary flags
+# -L itlimit -d maxdeg -t tau -q quality -b beta -g gamma
+
+LTF_ITLIMIT  = -L 100000
+LTF_MAXDEG   = -d 4
+LTF_TAU      = -t 0.5
+LTF_BETA     = -b 0.75
+LTF_GAMMA    = -g 0.41421356237
+LTF_CHEW     = -C 0.00025
+LTF_CHEW     = -C 0.0
+LTF_VERBOSITY = -V 2
+LTF_PROVO    = --use_provoker
+
+# quality for 30 degree aka arcsin 2^-1
+LTF_QUAL     = -q 1.0
+# quality for 20.07 degree aka arcsin 2^-3/2 
+LTF_QUAL     = -q 0.5
+# quality for 26.45 degree aka arcsin 2^-7/6 
+LTF_QUAL     = -q 0.793700525984100
+
+LTF_CORE     = $(LTF_ITLIMIT) $(LTF_MAXDEG) $(LTF_TAU) $(LTF_BETA) \
+							 $(LTF_GAMMA) $(LTF_QUAL) $(LTF_VERBOSITY) $(LTF_CHEW)
+LOPTRIFLAGS  = $(LTF_CORE)
+
+############## DEFAULT ##############
+
+default : build_it
+
+############## MARKERS ##############
+
+.PHONY   : %.test
+.SUFFIXES: .c .c .ln .cpp .o .testo _test.o
+.PRECIOUS: %.testo %.o %.yy.cpp %.tab.cpp %.tab.hpp %.tab.c %.tab.h
+
+############ BUILD RULES ############
+		
+%.o : %.c %.h
+		$(CC) $(INCLUDES) $(CFLAGS) -c $< -o $@ 2>&1 
+
+define compilecpp
+		$(CCC) $(INCLUDES) $(CCFLAGS) -c $< -o $@  
+endef
+
+%.o : %.cpp %.h
+		$(compilecpp)
+
+define linkos 
+@echo --------------------------------------;
+@echo link $^ into $@
+$(CCC) $(LDFLAGS) $^ $(LIBS) -o $@;
+chmod 700 $@
+endef
+
+%.bin : %.o
+		$(linkos)
+
+%.testo : %.o %_test.o 
+		@echo --------------------------------------;
+		@echo dependencies constructed. now compile:
+		$(linkos)
+
+%.test : %.testo %.o %_test.o
+		@echo --------------------------------------;
+		@echo running $< :
+		@./$< ;
+		@echo --------------------------------------;
+		@echo done;
+		@-rm $*_test.o $*.o;
+
+############ BUILD BINS #############
+
+build_it : $(TESTRUNNER) 
+
+$(TESTRUNNER) : $(TEST_OBJS) 
+		@echo dependencies constructed. now compile:
+		$(linkos)
+
+############# RUNNING ###############
+
+help : $(TESTRUNNER)
+		@./$(TESTRUNNER) -h
+
+# a rule used multiple times is `define'd
+
+define testarunner
+chmod 700 $(TESTRUNNER);
+@echo --------------------------------------;
+@echo running $(TESTRUNNER);
+@echo --------------------------------------;
+@./$(TESTRUNNER) $(LOPTRIFLAGS) $< $@ 
+@echo --------------------------------------;
+@echo done;
+endef
+
+# run from dat or fig
+
+%.pcmp : %.dat $(TESTRUNNER)
+		$(testarunner)
+		make $*.capfigs;
+
+%.pcmp : %.fig $(TESTRUNNER)
+		$(testarunner)
+		make $*.capfigs;
+
+%.pcmp : %.wdb $(TESTRUNNER)
+		$(testarunner)
+		make $*.capfigs;
+
+# run with provoker flag set
+
+%.ppcmp : LOPTRIFLAGS = $(LTF_CORE) $(LTF_PROVO)
+%.ppcmp : %.dat $(TESTRUNNER)
+		$(testarunner)
+		make $*_provo.capfigs;
+
+%.ppcmp : LOPTRIFLAGS = $(LTF_CORE) $(LTF_PROVO)
+%.ppcmp : %.fig $(TESTRUNNER)
+		$(testarunner)
+		make $*_provo.capfigs;
+
+%.ppcmp : LOPTRIFLAGS = $(LTF_CORE) $(LTF_PROVO)
+%.ppcmp : %.wdb $(TESTRUNNER)
+		$(testarunner)
+		make $*_provo.capfigs;
+
+testing : input.pcmp
+
+# roll the figs together 
+%.capfigs : $(patsubst %.ps,%.eps,$(RAN_FIGS))
+		-rename .eps _$*_$(TIME).eps $(patsubst %.ps,%.eps,$(RAN_FIGS))
+		@-tar -hczvf figs_$*_$(TIME).tgz $(patsubst %.ps,%_$*_$(TIME).eps,$(RAN_FIGS))
+		@-tar -tzvf figs_$*_$(TIME).tgz
+		mv figs_$*_$(TIME).tgz $(FIG_CACHE)
+		-rm $(patsubst %.ps,%_$*_$(TIME).eps,$(RAN_FIGS))
+
+capfigs : $(patsubst %.ps,%.eps,$(RAN_FIGS))
+		-rename .eps $(TIME).eps $(patsubst %.ps,%.eps,$(RAN_FIGS))
+		@-tar -hczvf figs_$(TIME).tgz $(patsubst %.ps,%$(TIME).eps,$(RAN_FIGS))
+		@-tar -tzvf figs_$(TIME).tgz 
+		mv figs_$(TIME).tgz $(FIG_CACHE)
+		-rm $(patsubst %.ps,%$(TIME).eps,$(RAN_FIGS))
+
+# make correct bounding box
+%.eps : %.ps 
+		@echo find real bounding box for $<;
+		@echo -n '   was: ';
+		@if grep Bounding $<; then\
+  	perl -p -e 'BEGIN { $$spit = 0;\
+   	$$bb = qx[gs -q -dNOPAUSE -dSAFER -dDELAYSAFER -dBATCH -sDEVICE=bbox -sOutputFile=/dev/null $< 2>&1 | awk "/\%\%Bounding/ {print}"];} \
+   	$$spit ||= (/^%%Bounding/ and $$_ = qq[$$bb]);' $< > $@;\
+  	else\
+		echo 'noBoundingBox';\
+  	perl -p -e 'BEGIN { $$spit = 0;\
+   	$$bb = qx[gs -q -dNOPAUSE -dSAFER -dDELAYSAFER -dBATCH -sDEVICE=bbox -sOutputFile=/dev/null $< 2>&1 | awk "/\%\%Bounding/ {print}"];} \
+   	$$spit ||= ($$_ = qq[$$bb$$_]);' $< > $@;\
+  	fi;
+		@echo -n 'is now: ';
+		@head $@ | grep Bounding
+
+############# UTILITIES #############
+
+%.dep : %.c
+		makedepend -- $(CFLAGS) -- $(INCLUDES) $<
+
+%.dep : %.cpp
+		makedepend -- $(CCFLAGS) -- $(INCLUDES) $<
+
+%.clean :
+		-/bin/rm -f $*.o;
+
+%.kleen :
+		@-/bin/rm -f $*.o 
+
+############### RULES ###############
+
+############# CLEAN UP ##############
+
+clean : $(patsubst %,%.clean,$(ALL_SRCS))
+kleen : $(patsubst %,%.kleen,$(ALL_SRCS))
+
+realclean : kleen
+		@-rm *.pcmp 
+		
+cleanfigs :
+		@-rm $(GEND_FIGS)
+
+############ MAINTENANCE ############
+
+
+########### LOST N FOUND ############
+
+#default: dep $(OUT)
+
+$(PROJECT) : $(C_OBJS)
+				$(CCC) $(C_OBJS) $(LDFLAGS) $(LIBS) -o $@;
+
+dep   : $(patsubst %,%.dep,$(SRCS))
+depend: dep
+
+# DO NOT DELETE THIS LINE -- make  depend  depends  on  it.
+

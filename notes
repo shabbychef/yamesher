@@ -1,0 +1,238 @@
+
+
+todo:
+	add circles?
+	add cubic bezier?
+	dissallows two or more distinct `segments' between a pair of 
+		vertices.  how to fix?..
+	i guess the groom procedure is not done.  must also check against
+		twopi/max_deg???
+
+
+file format:
+generalize the .dat file
+
+DIMENSION 2 
+POINTS num
+lab0 x0 y0
+lab1 x1 y1
+...
+labn xn yn
+SEGMENTS num
+slab0 2 nints lab00 lab01 ilab00 ilab01 .. ilab0m    (segment)
+slab1 -3 0 lab10 lab11 clab (arc with center clab)
+slab2 3 0 lab20 lab21 lab22 (quadratic bezier with controlpoints lab20 lab21 lab22)
+...
+PLANES 1
+plab0 nexts nints labints labexts
+
+work queue:
+	INPUT(vtx)
+	SEGMENT(s,z)
+	YIELD(s)
+	KILL(face)
+	CLEAR(indx)
+in that order, except CLEAR(0) comes after INPUT and before everything else,
+SEGMENT < CLEAR(1) < YIELD < KILL
+
+an edge handle is a face handle,vertex handle pair.?
+have seglist from edgehandles to segment objects
+have face handle map to item in queue?
+
+
+segment object:
+	secant cut, i.e. a split
+	`midpoint' cut, i.e. a split
+	crap! this makes problems with covariant return types!!?
+	
+triangulation2d data structure
+	for vertex v
+		v.point() returns the point associated
+		v.face() gives a face with v as corner
+	for face f
+		?? dumb stuff it seems
+
+
+from vertexhandle to distance.
+from vertexhandle to seqs of segmenthandles
+	two copies of each segmenthandle in the map
+	thus you can search from either vertex.
+	is this necessary? or is it ok to search
+	only from input vertices, and then store
+	each segmenthandle once?
+	work vs. storage. store twice.
+	vhandle -> vhandle -> seghandle
+
+
+have map from edge handles to segments.?
+	problem with this strategy is that not every
+	segment may correspond to an edge in the tDS.
+	i.e. an edge may be buried. pooh to that.
+
+segobj should have flip operator.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+read_input
+{
+read num points
+read n points, bless each, make map from string (name) to pair of 
+	pointhandle, vertexhandle (initialize null)
+
+read num segobjs
+read m segobjs, bless each, make map from string (name) to 
+	triple of segobjhandle, endpoint names.
+
+read num ints, num exts
+read all int+ext constraints of plane. foreach
+	if vertex obj and vhandle null in map, insert into DT, update vhandle in map.
+	if segobj, for each endpoint, attempt to insert into DT as above if vhandle
+		null, and update.
+		once vhandle non null, insert double vhandle key into endpoint lookup table.
+
+destroy two string keyed maps.
+
+return triangulation, endpoint lookup
+}
+
+groom
+{
+foreach key in endpoint lookup, if it points to map of size > 1, grab that 
+	vertex in the dt, walk all its neighbors to find the NN^2, i.e. minimal
+	squared distance to a neighbor.  put this in dtable.
+
+foreach key in endpoint lookup, if it points to map of size > 1, 
+	call split_ball(vh,q,true,check_skinny)
+}
+
+recover_segs
+{
+	for every vertex in endpoint lookup,
+		foreach veretx, segobj, lookup the segment in the tds.
+			if absent, check two adjacent vhandles (previous and next)
+			to see if they encroach the segment. if so, add a split
+			with the provoker to the queue.
+			if present, check the the previous and next to find a provoker,
+			and add split to the queue.
+
+	process_queue(false)
+}
+
+insure_quality
+{
+	foreach facehandle, if skinny, add kill request to queue.
+	process_queue(true)
+}
+
+split_segment(vhandle,vhandle,segobj,pointhandle,check_skinny)
+{
+	assume: there is no edgehandle->this segobj in the segment table
+
+	create a new segment object by splitting the old, possibly with
+		the given point, if pointhandle non null.
+
+	insert_point(new centerpoint,no_yield,true,check_skinny). 
+
+	for both subsegs
+	check_encroached(vhandl1,vhandl2,segobj,true,true)
+}
+
+bool check_encroached(vhandle1,vhandle2,segobj,add_to_segtable,add_to_queue)
+{
+	see if is edge from vhandle1,vhandle2 in tds. 
+		if so, add edge->segobj in segtable
+}
+
+process_queue(check_skinny)
+{
+	while queue not empty
+	{
+		pop next queue request
+		switch request:
+			SPLIT_BALL:
+				call split_ball(vh,q,true,check_skinny)
+			SPLIT_SEGMENT:
+				split_segment(    )
+			YIELD:
+				split_segment(    )
+			SPLIT_FACE:
+				if face is in triangulation, let p be its cc,
+					insert_point(p,q,true,true,true)
+					(may not insert cc)
+					if unsuccessful, return SPLIT_FACE(facehandle) to queue.
+	}
+}
+
+bool split_ball(vh,q,check_enc,check_skinny)
+{
+	find degree of vh in the endpoint table.
+	create new vector of same size as old vector.
+	foreach segobj pointed to:
+	{
+		get proper splitting point.
+		insert_point(new centerpoint,no_yield,true,check_skinny). 
+		get vhandle.
+		for both subsegs
+			check_encroached(vhandl1,vhandl2,segobj,true,true)
+			check_encroached(vhandl1,vhandl2,segobj,true,false?)
+		add segobj to new vector
+	}
+
+	find smallest edge emanating from vertex..
+}
+
+bool insert_point(point,queue,do_yield,check_enc,check_skinny)
+{
+	get cavity iterator for point in triangulation.
+		foreach edge, lookitup in endpoint lookup. if a segment,
+		and killed, or on boundary and encroached by new point then, 
+			if do_yield, add first one with yield to q, quit false.
+			if not, add to q, with provoking new point.
+
+	add point to triangulation, getting vertex handle.
+
+	if check_skinny, check all new faces for poor quality, adding kill reqs
+		to queue.
+
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+operations required of the segment table:
+
+	maintain segments, even if they are associated with an edge of the tds or 
+		not:
+
+		create a new segment, associated with two vertex neighbors?
+		delete a segment.
+		replace a segment with two subsegments.
+
+	given a tds:edge object, see if there is an associated segment.
+
+	when a segment is split, the midpoint is added to the mesh. this
+	blesses the midpoint as a vertex(handle). it should be clear _which_
+	two subsegments are associated with the midpoint.  then these can be
+	explicitly checked for presence/encroachment.
+
+	an input point may be incident to numerous segments....
+
+	when a ball is split: walk each segment associated with an
+		input vertex.  segment might not be present in tds due to
+		splitting by midpoint on disjoint seg.
+		split segment.
+
+
+	one table: edge object -> segment object 
+		(the segments which are present, but which might be encroached)
+
+	a queue of encroached segments, as triple(vhandle,vhandle,segobj).
+		sorted with largest radius first? keep this in the work queue!
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%55
+%
+
+use CGAL::sqrt?
