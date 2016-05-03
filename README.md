@@ -18,29 +18,29 @@ RUNNING notes for more limitations.
 
 send feedback to:  Steven E. Pav <shabbychef@gmail.com>
 
-## installation
+## Installation
 
 (Out of date!)
 
 Prerequisites:
 
-	1. the [CGAL library](www.cgal.org) (3.1.0 and greater should work). 
-	available as `libcgal-dev` on ubuntu.
-	2. the TCLAP library. this small library for parsing
-	command line arguments should be included in this
-	software bundle.
+1. the [CGAL library](www.cgal.org) (3.1.0 and greater should work). 
+available as `libcgal-dev` on ubuntu.
+2. the TCLAP library. this small library for parsing
+command line arguments should be included in this
+software bundle.
 
 Compiling:
 
-	1. edit the Makefile to have the proper location of your
-	CGAL Makefile, for example:
+1. edit the Makefile to have the proper location of your
+CGAL Makefile, for example:
 
 ```
-	CGAL_MAKEFILE = /usr/share/etc/cgal/make/makefile_i686_Linux-2.4.20-64GB-SMP_g++-3.3.0
+CGAL_MAKEFILE = /usr/share/etc/cgal/make/makefile_i686_Linux-2.4.20-64GB-SMP_g++-3.3.0
 ```
 
-	2. compile the software by typing `make`.
-	3. when that doesn't work, email me. (ugh.)
+2. compile the software by typing `make`.
+3. when that doesn't work, email me. (ugh.)
 
 ## Running
 
@@ -54,7 +54,7 @@ the software. Test this with the included `.fig` and `.dat`
 files.
 
 ```{bash}
-	make helloworld.pcmp
+make helloworld.pcmp
 ```
 
 This should generate a helloworld.pcmp and a bunch of
@@ -99,11 +99,11 @@ size, and basic geometry limits:
 
 Try
 ```{bash}
-	make help
+make help
 ```
 to get a listing of the flags for the 
 
-The flags for the software have the prefix LTF_ in the makefile.
+The flags for the software have the prefix `LTF_` in the makefile.
 they are
 
 ```
@@ -129,5 +129,7 @@ they are
 
 reasonable values for these are included in the makefile.
 
-## more to come
+------
+
+_more to come_
 

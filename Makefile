@@ -170,21 +170,15 @@ RAN_FIGS		 = as_input.ps curvature_bounded.ps finished_groom.ps \
 GEND_FIGS		 = $(RAN_FIGS) catchend.ps
 FIG_CACHE    = figtars/
 
-#what goes in the software package
-PRE_PLIST		 = $(TEST_CPPS) $(TEST_HS) makefile README INSTALL RUNNING COPYING tclap helloworld.fig A.dat $(FIG_CACHE)
-PACKLIST     = $(patsubst %,LOPPER/%,$(PRE_PLIST))
-PACKFILE     = lopper.tgz
-
 # This is the name of your output file
 OUT          = $(PROJECT)
 
 # CC speficies the name of the C compiler; CCC is the C++ compiler.
-CC           = gcc
-CCC          = g++
+CC          ?= gcc
+CCC         ?= g++
 
 # This specifies all your include directories
 INCLUDES     = -I. -I$(QTDIR) -I$(TCLAPDIR)
-
 
 # use a profiler?
 USE_GP_FLAG  = -pg
@@ -533,14 +527,6 @@ readclean :
 			readinput.yy.cpp readinput.yy.o;
 
 ############ MAINTENANCE ############
-
-# make the packed version
-packup:
-		-@rm -f $(FIG_CACHE)* 
-		-@mv usermakefile makefile;
-		-@cd ../ && $(TAR) -zcvf $(PACKFILE) --exclude CVS $(PACKLIST)
-		-@mv makefile usermakefile;
-		-@mv ../$(PACKFILE) .
 
 # remake the makefile from the stub directory
 makefile:
