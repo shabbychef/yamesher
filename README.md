@@ -1,6 +1,8 @@
 
 # yamesher
 
+[![Build Status](https://travis-ci.org/shabbychef/yamesher.png)](https://travis-ci.org/shabbychef/yamesher)
+
 Yet Another Mesher. Originally called _lopper_, 
 a simple two dimensional mesh generator with corner lopping.
 
