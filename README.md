@@ -14,7 +14,7 @@ and Olivier Gooch on meshing for curved boundaries.
 This software isn't terribly robust yet.  In particular,
 it was designed to convert xfig files of input into eps files
 of meshed output which could go into a paper.  See the
-RUNNING notes for more limitations.
+Running notes for more limitations.
 
 send feedback to:  Steven E. Pav <shabbychef@gmail.com>
 
@@ -34,11 +34,9 @@ Compiling:
 
 1. edit the Makefile to have the proper location of your
 CGAL Makefile, for example:
-
 ```
 CGAL_MAKEFILE = /usr/share/etc/cgal/make/makefile_i686_Linux-2.4.20-64GB-SMP_g++-3.3.0
 ```
-
 2. compile the software by typing `make`.
 3. when that doesn't work, email me. (ugh.)
 
@@ -129,7 +127,31 @@ they are
 
 reasonable values for these are included in the makefile.
 
+## Copyright
+
+Copyright (c) 2004-2016 Steven E. Pav
+
+Permission is hereby granted, free of charge, to any person 
+obtaining a copy of this software and associated documentation 
+files (the "Software"), to deal in the Software without restriction, 
+including without limitation the rights to use, copy, modify, merge, 
+publish, distribute, sublicense, and/or sell copies of the Software, 
+and to permit persons to whom the Software is furnished to do so, 
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be 
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS 
+BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN 
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+THE SOFTWARE.
+
 ------
 
-_more to come_
+_more to come..._
 
