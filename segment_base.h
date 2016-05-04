@@ -110,6 +110,8 @@
 #ifndef SEGMENT_BASE_H
 #define SEGMENT_BASE_H
 
+#include "config.h"
+
 #include "utility.h"
 
 #include <CGAL/basic.h>

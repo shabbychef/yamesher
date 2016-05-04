@@ -111,7 +111,7 @@
 #ifndef LOP_TRIANGULATION_H
 #define LOP_TRIANGULATION_H
 
-
+#include "config.h"
 
 #include "utility.h"
 #include "work_queue.h"

@@ -38,6 +38,8 @@
 #ifndef WORK_QUEUE_TEST_H
 #define WORK_QUEUE_TEST_H
 
+#include "config.h"
+
 #include "work_queue.h"
 #include <fstream>
 //CGAL headers

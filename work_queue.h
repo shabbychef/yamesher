@@ -99,6 +99,8 @@
 #ifndef WORK_QUEUE_H
 #define WORK_QUEUE_H
 
+#include "config.h"
+
 //for triple
 #include "utility.h"
 #include <iostream>

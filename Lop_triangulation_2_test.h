@@ -52,6 +52,8 @@
 #ifndef LOP_TRIANGULATION_2_TEST_H
 #define LOP_TRIANGULATION_2_TEST_H
 
+#include "config.h"
+
 // #define USE_HIGH_PRECISION
 
 #include "Lop_triangulation_2.h"

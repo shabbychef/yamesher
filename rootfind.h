@@ -24,6 +24,8 @@
 #ifndef __DEF_ROOTFIND__
 #define __DEF_ROOTFIND__
 
+#include "config.h"
+
 #include <cmath>
 #include <CGAL/basic.h>
 #include "math.h"

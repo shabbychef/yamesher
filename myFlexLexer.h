@@ -34,6 +34,8 @@
 #ifndef MYFLEXLEXER_H
 #define MYFLEXLEXER_H
 
+#include "config.h"
+
 #include "readinput.tab.hpp"
 #include <FlexLexer.h>
 

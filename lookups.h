@@ -103,6 +103,8 @@
 #ifndef LOOKUPS_H
 #define LOOKUPS_H
 
+#include "config.h"
+
 #define LOOKUPS_BOUNDING_BOX_EXPANSION_FACTOR 1.3
 
 #include "utility.h"

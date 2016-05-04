@@ -585,7 +585,9 @@ PACKAGE_STRING='yamesher 0.1.0'
 PACKAGE_BUGREPORT='shabbychef@gmail.com'
 PACKAGE_URL=''
 
-ac_unique_file="cgal_types.h"
+ac_unique_file="types.h"
+ac_unique_file="geometry.h"
+ac_unique_file="math.h"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -2181,6 +2183,10 @@ ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+# make a few of these:
+
 
 
 

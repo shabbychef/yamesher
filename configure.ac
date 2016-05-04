@@ -3,7 +3,11 @@
 
 AC_PREREQ([2.69])
 AC_INIT([yamesher], [0.1.0], [shabbychef@gmail.com])
-AC_CONFIG_SRCDIR([cgal_types.h])
+# make a few of these:
+AC_CONFIG_SRCDIR([types.h])
+AC_CONFIG_SRCDIR([geometry.h])
+AC_CONFIG_SRCDIR([math.h])
+
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
