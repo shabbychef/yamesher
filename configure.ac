@@ -10,6 +10,15 @@ AC_CONFIG_SRCDIR([math.h])
 
 AC_CONFIG_HEADERS([config.h])
 
+# c.f.
+# http://stackoverflow.com/a/5302054/164611
+# http://www.gnu.org/software/autoconf-archive/ax_lib_cgal_core.html#ax_lib_cgal_core
+AC_CONFIG_MACRO_DIR([autoconf])
+
+AX_LIB_CGAL_CORE([AC_MSG_RESULT([CGAL found])],
+ [AC_MSG_ERROR([CGAL is required; try libcgal-dev?])])
+
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
