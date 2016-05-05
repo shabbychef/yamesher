@@ -25,8 +25,6 @@
 #ifndef __DEF_DEBUGGING__
 #define __DEF_DEBUGGING__
 
-#include "config.h"
-
 #include <cmath>
 #include <CGAL/basic.h>
 

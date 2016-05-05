@@ -24,8 +24,6 @@
 #ifndef __DEF_TYPES__
 #define __DEF_TYPES__
 
-#include "config.h"
-
 #include <CGAL/basic.h>
 #include <CGAL/Cartesian.h>
 #include <CGAL/Triangulation_2.h>

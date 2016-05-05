@@ -88,8 +88,6 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include "config.h"
-
 #include <cmath>
 #include <CGAL/basic.h>
 

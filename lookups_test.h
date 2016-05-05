@@ -45,8 +45,6 @@
 #ifndef LOOKUPS_TEST_H
 #define LOOKUPS_TEST_H
 
-#include "config.h"
-
 #include "lookups.h"
 #include <CGAL/basic.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>

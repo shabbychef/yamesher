@@ -24,8 +24,6 @@
 #ifndef __DEF_MATH__
 #define __DEF_MATH__
 
-#include "config.h"
-
 #include <cmath>
 #include <CGAL/basic.h>
 #include "debugging.h"
