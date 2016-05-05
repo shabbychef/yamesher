@@ -1,14 +1,23 @@
 # eventually this should run and actually work.
 #
+# c.f. http://stackoverflow.com/a/17734419/164611
 # oh, and it will require libcgal-dev
-
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libcgal-dev
 
 language: cpp
 
-compiler: gcc
+compiler:
+  - gcc
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libboost-dev libmpfr-dev libgmp3-dev libcgal-dev
+
+before_script:
+  - mkdir build
+  - cd build
+  - cmake ..
+
+script: make
 
 #for vim modeline: (do not edit)
 # vim:ts=2:sw=2:tw=79:fdm=marker:fmr=FOLDUP,UNFOLD:cms=#%s:tags=.tags;:syn=yaml:ft=yaml:et:ai:si:cin:nu:fo=croqt:cino=p0t0c5(0:ff=unix
