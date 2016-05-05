@@ -54,7 +54,7 @@ endif()
 # Creating entries for target: yamesher
 # ############################
 
-add_executable( yamesher  lookups.cpp lookups_test.cpp Lop_triangulation_2.cpp Lop_triangulation_2_test.cpp myFlexLexer.cpp segment_base.cpp test_cgal.cpp utility.cpp work_queue.cpp work_queue_test.cpp )
+add_executable( yamesher  lookups.cpp lookups_test.cpp Lop_triangulation_2.cpp Lop_triangulation_2_test.cpp myFlexLexer.cpp segment_base.cpp utility.cpp work_queue.cpp work_queue_test.cpp )
 
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS yamesher )
 
