@@ -489,7 +489,7 @@ namespace lopping {
 	{
 		return ( (is_horizontal_collinear< Kernel_ >(a,b,c)) || 
 		         (  is_vertical_collinear< Kernel_ >(a,b,c)) || 
-						 CGAL::collinear(a,b,c) );
+						 CGAL::collinear< Kernel_ >(a,b,c) );
 	};//UNFOLD
 
 	//get max and min angle of triangle; bool value returns//FOLDUP
